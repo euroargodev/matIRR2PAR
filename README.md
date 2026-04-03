@@ -23,3 +23,6 @@ GitHub original repository : [PAR_BGC_Argo](https://github.com/euroargodev/PAR_B
   
 * Tan, J., Frouin, R., Leymarie, E., Mitchell, B.G., 2025. Modeling underwater photosynthetically available radiation profiles from biogeochemical Argo floats using multi-spectral irradiance measurements. Opt. Express, OE 33, 44355–44377. [https://doi.org/10.1364/OE.566083](https://doi.org/10.1364/OE.566083)
 GitHub original repository : [BioArgo_PAR](https://github.com/jit079/BioArgo_PAR)
+
+# How to cite this calculation
+If you use this package, please cite the original work by J. Pitarch and J. Tan and note that the PAR estimate is the average of these two models.
