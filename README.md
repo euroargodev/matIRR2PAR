@@ -12,7 +12,17 @@ The Photosynthetically Available Radiation (PAR) is a radiometric parameter that
 The purpose of this Python code is to provide a wrapper for the two models evaluated within the Argo framework. It uses as input a matrix of four irradiance values at **380, 443, 490, and 555 nm**, along with the associated depth vector, and calculates the outputs of both models as well as the average of the calculated PAR values, which is the PAR estimate to be considered as recommended during ADMT26 [ADMT26-Leymarie-PAR Model.pptx](https://docs.google.com/presentation/d/1edo8Na_IFxEJGKgBwDNWRhW9zqafZP9W/edit?usp=drive_link&ouid=112140535291181030156&rtpof=true&sd=true).
 
 # How to use this package
+[JTan_PAR_results, JPitarch_PAR_results, mean_PAR, mean_uncertainty] = IRR2PAR(Ed, z)
 
+Parameters:
+* Ed -- N x 4 array  [Ed380, Ed443, Ed490, Ed555] in W/m²/nm
+* z  -- N x 1 array   depth (m)
+
+Results: 
+* JTan_PAR_results    -- cell {JTan_PAR, JTan_e}
+* JPitarch_PAR_results-- cell {JPitarch_PAR, JPitarch_PAR_b, JPitarch_ep50, JPitarch_IQR_ep, JPitarch_e}
+* mean_PAR            -- N x 1  mean of JTan_PAR and JPitarch_PAR (ignoring NaN)
+* mean_uncertainty    -- N x 1  combined uncertainty
 
 All PAR values are in microMoleQuanta/m^2/sec
 
