@@ -11,21 +11,92 @@ The Photosynthetically Available Radiation (PAR) is a radiometric parameter that
 
 The purpose of this Python code is to provide a wrapper for the two models evaluated within the Argo framework. It uses as input a matrix of four irradiance values at **380, 443, 490, and 555 nm**, along with the associated depth vector, and calculates the outputs of both models as well as the average of the calculated PAR values, which is the PAR estimate to be considered as recommended during ADMT26 [ADMT26-Leymarie-PAR Model.pptx](https://docs.google.com/presentation/d/1edo8Na_IFxEJGKgBwDNWRhW9zqafZP9W/edit?usp=drive_link&ouid=112140535291181030156&rtpof=true&sd=true).
 
-# How to use this package
+# Usage
+```
 [JTan_PAR_results, JPitarch_PAR_results, mean_PAR, mean_uncertainty] = IRR2PAR(Ed, z)
 
 Parameters:
 * Ed -- N x 4 array  [Ed380, Ed443, Ed490, Ed555] in W/m²/nm
 * z  -- N x 1 array   depth (m)
 
-Results: 
+Returns: 
 * JTan_PAR_results    -- cell {JTan_PAR, JTan_e}
 * JPitarch_PAR_results-- cell {JPitarch_PAR, JPitarch_PAR_b, JPitarch_ep50, JPitarch_IQR_ep, JPitarch_e}
-* mean_PAR            -- N x 1  mean of JTan_PAR and JPitarch_PAR (ignoring NaN)
+* mean_PAR            -- N x 1  The average PAR values from both models (excluding NA/NaN values). This is the PAR value recommended under the Argo framework.
 * mean_uncertainty    -- N x 1  combined uncertainty
-
+```
 All PAR values are in microMoleQuanta/m^2/sec
 
+Here is a example:
+```
+Ed = [3.1477e-07, 4.401e-05, 0.00031093, 2.6219e-05;
+       0.0097528,  0.061085,  0.10562,    0.087316;
+       0.20572,    0.52315,   0.54544,    0.16185];
+ z = [84.8; 14.2; 28.1];
+
+[JTan_PAR_results, JPitarch_PAR_results, mean_PAR, mean_uncertainty] = IRR2PAR(Ed, z)
+```
+
+A more realistic example:
+```
+% Read example data:
+% 1st column - depth, 2nd - PAR (micro E/m2/s)
+% 3rd - 6th columns: Ed380 (mW/cm2/micron), Ed443 (mW/cm2/micron), Ed490 (mW/cm2/micron), Ed555 (mW/cm2/micron)
+
+filename = '1902685-lovuse023b-cycle12.csv';
+
+opts = detectImportOptions(filename, 'Delimiter', ';');
+df = readtable(filename, opts);
+
+Ed         = [df.Ed_380, df.Ed_443, df.Ed_490, df.Ed_555];
+depth      = df.depth;
+ramses_par = df.RamsesPAR; % Measured PAR (micro E/m2/s)
+
+[JTan_PAR_results, JPitarch_PAR_results, mean_PAR, mean_uncertainty] = IRR2PAR(Ed, depth);
+
+
+% --- Figure ---
+fig = figure('Units', 'inches', 'Position', [1, 1, 14, 6],'Color', 'white');
+sgtitle('1902685-lovuse023b-cycle12', 'FontSize', 16, 'FontWeight', 'bold')
+
+% --- Subplot 1: PAR values ---
+ax1 = subplot(1, 2, 1);
+set(ax1, 'XScale', 'log')
+hold(ax1, 'on');
+semilogx(ax1, JTan_PAR_results{1},     depth, 'Color', [1.0, 0.65, 0.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (Tan et al, 2025)');
+semilogx(ax1, mean_PAR,     depth, 'Color', [0.0, 0.5,  0.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (IRR2PAR)');
+semilogx(ax1, JPitarch_PAR_results{1}, depth, 'Color', [0.0, 0.0,  1.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (Pitarch et al, 2025)');
+semilogx(ax1, ramses_par,   depth, 'Color', [1.0, 0.0,  0.0], 'LineWidth', 1.5, 'DisplayName', 'measured');
+xlabel(ax1, 'PAR (\muE m^{-2} s^{-1})');
+ylabel(ax1, 'Depth (m)');
+lg1 = legend(ax1, 'Location', 'northwest');
+lg1.BoxFace.ColorType = 'truecoloralpha';
+lg1.BoxFace.ColorData = uint8([255 255 255 180]');
+set(ax1, 'YDir', 'reverse', 'TickDir', 'out', 'Box', 'off', ...
+    'XAxisLocation', 'bottom', 'YAxisLocation', 'left');
+ylim(ax1, [0, 300]);
+
+% --- Subplot 2: Uncertainties ---
+ax2 = subplot(1, 2, 2);
+set(ax2, 'XScale', 'log')
+hold(ax2, 'on');
+semilogx(ax2, JTan_PAR_results{2},     depth, 'Color', [1.0, 0.65, 0.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (Tan et al, 2025)');
+semilogx(ax2, JPitarch_PAR_results{5}, depth, 'Color', [0.0, 0.0,  1.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (Pitarch et al, 2025)');
+semilogx(ax2, mean_uncertainty,   depth, 'Color', [0.0, 0.5,  0.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (IRR2PAR)');
+xlabel(ax2, 'Uncertainties');
+ylabel(ax2, 'Depth (m)');
+lg3 = legend(ax2, 'Location', 'southeast');
+lg3.BoxFace.ColorType = 'truecoloralpha';
+lg3.BoxFace.ColorData = uint8([255 255 255 180]');
+set(ax2, 'YDir', 'reverse', 'TickDir', 'out', 'Box', 'off', ...
+    'XAxisLocation', 'bottom', 'YAxisLocation', 'left');
+ylim(ax2, [0, 300]);
+
+annotation(fig, 'rectangle', ax1.Position, 'EdgeColor', 'k', 'LineWidth', 0.5);
+annotation(fig, 'rectangle', ax2.Position, 'EdgeColor', 'k', 'LineWidth', 0.5);
+
+![example/example.png](./example/example.png)
+```
 # Bibliography
 We would like to warmly thank Jaime Pitarch and Jing Tan for their work and for making their code available to the community.
 * Pitarch, J., Leymarie, E., Vellucci, V., Massi, L., Claustre, H., Poteau, A., Antoine, D., Organelli, E., 2025. Accurate estimation of photosynthetic available radiation from multispectral downwelling irradiance profiles. Limnology and Oceanography: Methods. [https://doi.org/10.1002/lom3.10673](https://doi.org/10.1002/lom3.10673)
