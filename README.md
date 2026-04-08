@@ -20,14 +20,14 @@ Parameters:
 * z  -- N x 1 array   depth (m)
 
 Returns: 
-* JTan_PAR_results    -- cell {JTan_PAR, JTan_e}
-* JPitarch_PAR_results-- cell {JPitarch_PAR, JPitarch_PAR_b, JPitarch_ep50, JPitarch_IQR_ep, JPitarch_e}
-* mean_PAR            -- N x 1  The average PAR values from both models (excluding NA/NaN values). This is the PAR value recommended under the Argo framework.
-* mean_uncertainty    -- N x 1  combined uncertainty
+* JTan_PAR_results     -- cell {JTan_PAR, JTan_e}
+* JPitarch_PAR_results -- cell {JPitarch_PAR, JPitarch_PAR_b, JPitarch_ep50, JPitarch_IQR_ep, JPitarch_e}
+* mean_PAR             -- N x 1  The average PAR values from both models (excluding NA/NaN values). This is the PAR value recommended under the Argo framework.
+* mean_uncertainty     -- N x 1  combined uncertainty
 ```
 All PAR values are in microMoleQuanta/m^2/sec
 
-Here is a example:
+Here is an example:
 ```
 Ed = [3.1477e-07, 4.401e-05, 0.00031093, 2.6219e-05;
        0.0097528,  0.061085,  0.10562,    0.087316;
@@ -44,9 +44,7 @@ A more realistic example:
 % 3rd - 6th columns: Ed380 (mW/cm2/micron), Ed443 (mW/cm2/micron), Ed490 (mW/cm2/micron), Ed555 (mW/cm2/micron)
 
 filename = '1902685-lovuse023b-cycle12.csv';
-
-opts = detectImportOptions(filename, 'Delimiter', ';');
-df = readtable(filename, opts);
+df = readtable(filename);
 
 Ed         = [df.Ed_380, df.Ed_443, df.Ed_490, df.Ed_555];
 depth      = df.depth;
@@ -94,9 +92,9 @@ ylim(ax2, [0, 300]);
 
 annotation(fig, 'rectangle', ax1.Position, 'EdgeColor', 'k', 'LineWidth', 0.5);
 annotation(fig, 'rectangle', ax2.Position, 'EdgeColor', 'k', 'LineWidth', 0.5);
-
-![example/example.png](./example/example.png)
 ```
+![example/example.png](./example/example.png)
+
 # Bibliography
 We would like to warmly thank Jaime Pitarch and Jing Tan for their work and for making their code available to the community.
 * Pitarch, J., Leymarie, E., Vellucci, V., Massi, L., Claustre, H., Poteau, A., Antoine, D., Organelli, E., 2025. Accurate estimation of photosynthetic available radiation from multispectral downwelling irradiance profiles. Limnology and Oceanography: Methods. [https://doi.org/10.1002/lom3.10673](https://doi.org/10.1002/lom3.10673)
