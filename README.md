@@ -78,9 +78,9 @@ ylim(ax1, [0, 300]);
 ax2 = subplot(1, 2, 2);
 set(ax2, 'XScale', 'log')
 hold(ax2, 'on');
-semilogx(ax2, JTan_PAR_results{2},     depth, 'Color', [1.0, 0.65, 0.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (Tan et al, 2025)');
-semilogx(ax2, JPitarch_PAR_results{5}, depth, 'Color', [0.0, 0.0,  1.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (Pitarch et al, 2025)');
-semilogx(ax2, mean_uncertainty,   depth, 'Color', [0.0, 0.5,  0.0], 'LineWidth', 1.5, 'DisplayName', 'modeled (IRR2PAR)');
+semilogx(ax2, JTan_PAR_results{2},     depth, 'Color', 'blue', 'LineWidth', 1.5, 'DisplayName', 'modeled (Tan et al, 2025)');
+semilogx(ax2, JPitarch_PAR_results{5}, depth, 'Color', [0.3010, 0.7450, 0.9330], 'LineWidth', 1.5, 'DisplayName', 'modeled (Pitarch et al, 2025)');
+semilogx(ax2, mean_uncertainty,   depth, 'Color', 'black', 'LineWidth', 1.5, 'DisplayName', 'modeled (IRR2PAR)');
 xlabel(ax2, 'Uncertainties');
 ylabel(ax2, 'Depth (m)');
 lg3 = legend(ax2, 'Location', 'southeast');
